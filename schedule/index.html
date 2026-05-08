@@ -122,6 +122,7 @@
       </div>
       <button class="nav-arrow" id="prevBtn">‹</button>
       <button class="nav-arrow text" id="todayBtn">오늘</button>
+      <button class="nav-arrow" id="refreshBtn" title="최신 데이터 가져오기">↻</button>
       <button class="nav-arrow" id="nextBtn">›</button>
     </div>
   </div>
@@ -293,8 +294,9 @@
       '</div>';
   }
 
-  function loadData() {
-    fetch(API_URL)
+ function loadData(forceRefresh) {
+    const url = forceRefresh ? API_URL + '?refresh=1' : API_URL;
+    fetch(url)
       .then(function(res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
@@ -336,6 +338,15 @@
   document.getElementById('todayBtn').addEventListener('click', function() {
     currentDate = new Date();
     render();
+  });
+  document.getElementById('refreshBtn').addEventListener('click', function() {
+    const btn = document.getElementById('refreshBtn');
+    btn.style.opacity = '0.4';
+    btn.style.pointerEvents = 'none';
+    document.getElementById('appWrap').style.display = 'none';
+    document.getElementById('loadingWrap').style.display = 'flex';
+    document.getElementById('loadingWrap').classList.remove('hide');
+    loadData(true);
   });
 
   loadData();
